@@ -51,12 +51,13 @@ spec:
         stage('Deploy Docker Image') {
             steps {
                 script {
-                    agent(['ssh']) {
+                    // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
+                    sshagent(['ssh']) {
                         sh """
-                            ssh root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
+                            ssh root@192.168.1.119 'docker pull ${DOCKER_IMAGE} &&
                             docker stop myapp || true &&
                             docker rm myapp || true &&
-                            docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
+                            docker run -d --name myapp -p 80:80 ${DOCKER_IMAGE}'
                         """
                     }
                 }
