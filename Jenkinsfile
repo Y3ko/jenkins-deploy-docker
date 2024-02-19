@@ -53,7 +53,7 @@ spec:
                 script {
                     sshagent(['ssh']) {
                         sh """
-                            ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
+                            ssh root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                             docker stop myapp || true &&
                             docker rm myapp || true &&
                             docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
