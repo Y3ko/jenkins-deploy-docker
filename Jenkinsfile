@@ -55,7 +55,7 @@ spec:
                     // SSH anahtarını known_hosts dosyasına ekle
                     sh 'mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh'
                     sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
-                    sshagent(credentialsId: 'jenkins-ssh-credential-id') {
+                    sshagent(credentialsId: 'ssh') {
                         sh """
                             ssh -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                             docker stop myapp || true &&
