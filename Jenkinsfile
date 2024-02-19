@@ -50,7 +50,7 @@ spec:
 
         stage('Deploy Docker Image') {
             steps {
-                node('any') {
+                node('ssh') {
                     sshagent(['ssh']) {
                         sh """
                             ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
