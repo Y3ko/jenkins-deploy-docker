@@ -48,29 +48,20 @@ spec:
             }
         }
 
-        stage('Deploy Docker Image') {
-            steps {
-                node { // Bir node bloğu içerisinde çalıştır
-                    script {
-                        // SSH üzerinden remote sunucuya bağlan ve docker container'ı çalıştır
-                        sshPublisher(publishers: [
-                            sshPublisherDesc(
-                                configName: 'ssh',
-                                transfers: [
-                                    sshTransfer(
-                                        execCommand: """
-                                            docker pull ${env.DOCKER_IMAGE} &&
-                                            docker stop myapp || true &&
-                                            docker rm myapp || true &&
-                                            docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}
-                                        """,
-                                        execTimeout: 120000,
-                                        usePty: true,
-                                        remoteDirectory: "/home/test"
-                                    )
-                                ]
-                            )
-                        ])
+stage('Deploy Docker Image') {
+    steps {
+        node {
+            sshagent(['my-ssh-credentials-id']) {
+                sh """
+                   ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
+                   docker stop myapp || true &&
+                   docker rm myapp || true &&
+                   docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
+                """
+            }
+        }
+    }
+}
                     }
                 }
             }
