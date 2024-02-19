@@ -53,6 +53,7 @@ spec:
             steps {
                 script {
                     // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
+                    sh 'ssh-keyscan -H 192.168.1.119 >> ~/.ssh/known_hosts'
                     sshagent(['ssh']) {
                         sh """
                             ssh root@192.168.1.119 'docker pull ${DOCKER_IMAGE} &&
