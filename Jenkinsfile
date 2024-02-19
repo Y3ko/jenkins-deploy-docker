@@ -52,6 +52,7 @@ spec:
             steps {
                 script {
                     sshagent(['ssh']) {
+                    withDockerRegistry(credentialsId: "dockerhub", url: "https://docker.io")
                         sh """
                             ssh root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                             docker stop myapp || true &&
