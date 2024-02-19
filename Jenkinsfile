@@ -48,20 +48,16 @@ spec:
             }
         }
 
-stage('Deploy Docker Image') {
-    steps {
-        node {
-            sshagent(['my-ssh-credentials-id']) {
-                sh """
-                   ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
-                   docker stop myapp || true &&
-                   docker rm myapp || true &&
-                   docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
-                """
-            }
-        }
-    }
-}
+        stage('Deploy Docker Image') {
+            steps {
+                node {
+                    sshagent(['my-ssh-credentials-id']) {
+                        sh """
+                            ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
+                            docker stop myapp || true &&
+                            docker rm myapp || true &&
+                            docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
+                        """
                     }
                 }
             }
