@@ -56,15 +56,13 @@ spec:
                     java --version
                 """
             }
-            stages {
-                stage('Deploy Docker Image') {
-                    steps {
-                        sshagent(['ubnt-creds']) {
-                            // ssh komutunda değişkeni argüman olarak sağlayın
-                            sh "ssh -tt username@hostname '${remoteCommands}'"
-                        }
+            steps {
+                script {
+                    sshagent(['ssh']) {
+                        sh "ssh -tt nfs@192.168.1.119 '${remoteCommands}'"
                     }
                 }
             }
         }
-
+    }
+}
