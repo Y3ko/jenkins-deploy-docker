@@ -49,6 +49,7 @@ spec:
         }
 
         stage('Deploy Docker Image') {
+            agent any
             steps {
                 script {
                     // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
