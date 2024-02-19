@@ -17,10 +17,10 @@ pipeline {
                         chmod 644 /home/jenkins/.ssh/known_hosts
                     '''
                     // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
-                    sh 'ssh-keyscan -H 192.168.1.119 >> ~/.ssh/known_hosts'
+                    sh 'ssh-keyscan -H 192.168.1.121 >> ~/.ssh/known_hosts'
                     sshagent(['ssh']) {
                         sh """
-                            ssh root@192.168.1.119 'docker pull ${DOCKER_IMAGE} &&
+                            ssh nfs@192.168.1.121 'docker pull ${DOCKER_IMAGE} &&
                             docker stop myapp || true &&
                             docker rm myapp || true &&
                             docker run -d --name myapp -p 80:80 ${DOCKER_IMAGE}'
