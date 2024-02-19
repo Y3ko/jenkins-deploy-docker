@@ -52,20 +52,15 @@ spec:
             agent any
             steps {
                 script {
-                        sh '''
-                            mkdir -p /home/jenkins/.ssh
-                            chmod 700 /home/jenkins/.ssh
-                            touch /home/jenkins/.ssh/known_hosts
-                            chmod 644 /home/jenkins/.ssh/known_hosts
-                        '''
-                    // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
-                    sh 'ssh-keyscan -H 192.168.1.119 >> ~/.ssh/known_hosts'
-                    sshagent(['ssh']) {
+                    // SSH anahtarını known_hosts dosyasına ekle
+                    sh 'mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh'
+                    sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
+                    sshagent(credentialsId: 'jenkins-ssh-credential-id') {
                         sh """
-                            ssh root@192.168.1.119 'docker pull ${DOCKER_IMAGE} &&
+                            ssh -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                             docker stop myapp || true &&
                             docker rm myapp || true &&
-                            docker run -d --name myapp -p 80:80 ${DOCKER_IMAGE}'
+                            docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
                         """
                     }
                 }
