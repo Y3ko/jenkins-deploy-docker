@@ -49,20 +49,22 @@ spec:
 
         stage('Deploy Docker Image') {
             agent any
-            steps {
-                script {
-                    // SSH anahtarını known_hosts dosyasına ekle
-                    sh 'mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh'
-                    sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
-                    // SSH Private Key'i doğrudan kullan
-                    sh """
-                        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
-                        docker stop myapp || true &&
-                        docker rm myapp || true &&
-                        docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
-                    """
+            environment {
+                remoteCommands = """
+                    java --version;
+                    java --version;
+                    java --version
+                """
+            }
+            stages {
+                stage('Deploy Docker Image') {
+                    steps {
+                        sshagent(['ubnt-creds']) {
+                            // ssh komutunda değişkeni argüman olarak sağlayın
+                            sh "ssh -tt username@hostname '${remoteCommands}'"
+                        }
+                    }
                 }
             }
         }
-    }
-}
+
