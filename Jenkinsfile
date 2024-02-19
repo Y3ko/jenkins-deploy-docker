@@ -56,7 +56,7 @@ spec:
                     sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
                     // SSH Private Key'i doğrudan kullan
                     sh """
-                        ssh -i /path/to/private/key -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
+                        ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                         docker stop myapp || true &&
                         docker rm myapp || true &&
                         docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
