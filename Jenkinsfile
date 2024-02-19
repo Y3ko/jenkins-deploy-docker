@@ -52,6 +52,12 @@ spec:
             agent any
             steps {
                 script {
+                        sh '''
+                            mkdir -p /home/jenkins/.ssh
+                            chmod 700 /home/jenkins/.ssh
+                            touch /home/jenkins/.ssh/known_hosts
+                            chmod 644 /home/jenkins/.ssh/known_hosts
+                        '''
                     // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
                     sh 'ssh-keyscan -H 192.168.1.119 >> ~/.ssh/known_hosts'
                     sshagent(['ssh']) {
