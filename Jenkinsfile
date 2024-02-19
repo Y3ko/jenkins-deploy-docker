@@ -37,9 +37,8 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        // Docker imajını derle.
+                        // Docker imajını derle ve Docker Registry'ye push et.
                         def dockerImage = docker.build("y3ko/jenkins:test3")
-                        // Docker Registry'ye giriş yap ve imajı push et.
                         withDockerRegistry(credentialsId: "dockerhub", url: "") {
                             dockerImage.push()
                         }
@@ -48,22 +47,22 @@ spec:
             }
         }
 
-    stage('Deploy Docker Image') {
-        agent any
-        steps {
-            script {
-                // SSH anahtarını known_hosts dosyasına ekle
-                sh 'mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh'
-                sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
-                // SSH Private Key'i doğrudan kullan
-                sh """
-                    ssh -i /path/to/private/key -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
-                    docker stop myapp || true &&
-                    docker rm myapp || true &&
-                    docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
-                """
-                    }
+        stage('Deploy Docker Image') {
+            agent any
+            steps {
+                script {
+                    // SSH anahtarını known_hosts dosyasına ekle
+                    sh 'mkdir -p /home/jenkins/.ssh && chmod 700 /home/jenkins/.ssh'
+                    sh 'ssh-keyscan -H 192.168.1.119 > /home/jenkins/.ssh/known_hosts'
+                    // SSH Private Key'i doğrudan kullan
+                    sh """
+                        ssh -i /path/to/private/key -o StrictHostKeyChecking=no root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
+                        docker stop myapp || true &&
+                        docker rm myapp || true &&
+                        docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}'
+                    """
                 }
             }
         }
     }
+}
