@@ -51,7 +51,7 @@ spec:
         stage('Deploy Docker Image') {
             steps {
                 script {
-                    sshagent(['ssh']) {
+                    agent(['ssh']) {
                         sh """
                             ssh root@192.168.1.119 'docker pull ${env.DOCKER_IMAGE} &&
                             docker stop myapp || true &&
