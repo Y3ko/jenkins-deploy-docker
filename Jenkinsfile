@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     sshagent(['ssh']) {
-                        sh "ssh -tt nfs@192.168.1.119 '${remoteCommands}'"
+                        sh "ssh -tt nfs@192.168.1.121 '${remoteCommands}'"
                     }
                 }
             }
