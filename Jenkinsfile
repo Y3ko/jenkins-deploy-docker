@@ -40,7 +40,7 @@ spec:
                         // Docker imajını derle.
                         def dockerImage = docker.build("y3ko/jenkins:test3")
                         // Docker Registry'ye giriş yap ve imajı push et.
-                        withDockerRegistry(credentialsId: "dockerhub", url: "") {
+                        withDockerRegistry(credentialsId: "dockerhub", url: "https://docker.io") {
                             dockerImage.push()
                         }
                     }
@@ -50,7 +50,7 @@ spec:
 
         stage('Deploy Docker Image') {
             steps {
-                node('ssh') {
+                script {
                     sshagent(['ssh']) {
                         sh """
                             ssh user@remote-server 'docker pull ${env.DOCKER_IMAGE} &&
