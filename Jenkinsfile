@@ -50,26 +50,28 @@ spec:
 
         stage('Deploy Docker Image') {
             steps {
-                script {
-                    // SSH üzerinden remote sunucuya bağlan ve docker container'ı çalıştır
-                    sshPublisher(publishers: [
-                        sshPublisherDesc(
-                            configName: 'ssh',
-                            transfers: [
-                                sshTransfer(
-                                    execCommand: """
-                                    docker pull y3ko/jenkins:test3 &&
-                                    docker stop myapp || true &&
-                                    docker rm myapp || true &&
-                                    docker run -d --name myapp -p 80:80 y3ko/jenkins:test3
-                                    """,
-                                    execTimeout: 120000,
-                                    usePty: true,
-                                    remoteDirectory: "/home/test"
-                                )
-                            ]
-                        )
-                    ])
+                node { // Bir node bloğu içerisinde çalıştır
+                    script {
+                        // SSH üzerinden remote sunucuya bağlan ve docker container'ı çalıştır
+                        sshPublisher(publishers: [
+                            sshPublisherDesc(
+                                configName: 'ssh',
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: """
+                                            docker pull ${env.DOCKER_IMAGE} &&
+                                            docker stop myapp || true &&
+                                            docker rm myapp || true &&
+                                            docker run -d --name myapp -p 80:80 ${env.DOCKER_IMAGE}
+                                        """,
+                                        execTimeout: 120000,
+                                        usePty: true,
+                                        remoteDirectory: "/home/test"
+                                    )
+                                ]
+                            )
+                        ])
+                    }
                 }
             }
         }
