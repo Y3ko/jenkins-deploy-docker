@@ -20,7 +20,7 @@ pipeline {
                     sh 'ssh-keyscan -H 192.168.1.121 >> ~/.ssh/known_hosts'
                     sshagent(['ssh']) {
                         sh """
-                            ssh nfs@192.168.1.121 'docker pull ${DOCKER_IMAGE} &&
+                            ssh -i /home/jenkins/agent/workspace/dockerdeploy@tmp/private_key_17452322152948238854.key nfs@192.168.1.121 'docker pull ${DOCKER_IMAGE} &&
                             docker stop myapp || true &&
                             docker rm myapp || true &&
                             docker run -d --name myapp -p 80:80 ${DOCKER_IMAGE}'
