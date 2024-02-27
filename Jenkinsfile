@@ -1,31 +1,30 @@
 pipeline {
-    agent none
+    agent any
 
     environment {
         DOCKER_IMAGE = 'y3ko/jenkins:test3'
     }
-
+    //öncesine docker image build edilip dockerhub'a atılabilir
     stages {
-        stage('Deploy Docker Image') {
-            agent any
+        stage('Deploy via SSH') {
             steps {
                 script {
-                    sh '''
-                        mkdir -p /home/jenkins/.ssh
-                        chmod 700 /home/jenkins/.ssh
-                        touch /home/jenkins/.ssh/known_hosts
-                        chmod 644 /home/jenkins/.ssh/known_hosts
-                    '''
-                    // SSH anahtarları ile güvenli bir şekilde bağlanmak için sshagent adımını kullan.
-                    sh 'ssh-keyscan -H 192.168.1.121 >> ~/.ssh/known_hosts'
-                    sshagent(['ssh']) {
-                        sh """
-                            ssh -i /home/jenkins/agent/workspace/dockerdeploy@tmp/private_key_17452322152948238854.key nfs@192.168.1.121 'docker pull ${DOCKER_IMAGE} &&
-                            docker stop myapp || true &&
-                            docker rm myapp || true &&
-                            docker run -d --name myapp -p 80:80 ${DOCKER_IMAGE}'
-                        """
-                    }
+                    // SSH sunucusunu kullanarak komut çalıştır
+                    sshPublisher(
+                        publishers: [
+                            sshPublisherDesc(
+                                configName: 'nfs', // Jenkins UI'da tanımladığınız SSH sunucusunun adı
+                                transfers: [
+                                    sshTransfer(
+                                        execCommand: 'docker pull y3ko/test && docker run -d --name myapp -p 80:80 y3ko/test' // Uzak sunucuda çalıştırılacak komut
+                                    )
+                                ],
+                                usePromotionTimestamp: false,
+                                useWorkspaceInPromotion: false,
+                                verbose: true
+                            )
+                        ]
+                    )
                 }
             }
         }
